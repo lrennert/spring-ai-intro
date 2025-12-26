@@ -1,5 +1,7 @@
 package guru.springframework.springaiintro.services;
 
+import guru.springframework.springaiintro.model.Answer;
+import guru.springframework.springaiintro.model.Question;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Service;
 
@@ -19,5 +21,18 @@ public class OpenAIServiceImpl implements OpenAIService {
                 .user(question)
                 .call()
                 .content();
+    }
+
+    @Override
+    public Answer getAnswer(Question question) {
+        System.out.println("getAnswer was called");
+
+        String answer = chatClient
+                .prompt()
+                .user(question.question())
+                .call()
+                .content();
+
+        return new Answer(answer);
     }
 }
