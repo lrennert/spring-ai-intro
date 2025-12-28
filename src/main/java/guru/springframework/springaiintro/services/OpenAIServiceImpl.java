@@ -16,6 +16,9 @@ public class OpenAIServiceImpl implements OpenAIService {
     @Value("classpath:templates/get-capital.st")
     private Resource getCapitalPrompt;
 
+    @Value("classpath:templates/get-capital-with-info.st")
+    private Resource getCapitalWithInfoPrompt;
+
     public OpenAIServiceImpl(ChatClient chatClient) {
         this.chatClient = chatClient;
     }
@@ -48,6 +51,20 @@ public class OpenAIServiceImpl implements OpenAIService {
                 .prompt()
                 .user(u -> u
                         .text(getCapitalPrompt)
+                        .param("stateOrCountry", getCapitalRequest.stateOrCountry())
+                )
+                .call()
+                .content();
+
+        return new Answer(answer);
+    }
+
+    @Override
+    public Answer getCapitalWithInfo(GetCapitalRequest getCapitalRequest) {
+        String answer = chatClient
+                .prompt()
+                .user(u -> u
+                        .text(getCapitalWithInfoPrompt)
                         .param("stateOrCountry", getCapitalRequest.stateOrCountry())
                 )
                 .call()
