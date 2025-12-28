@@ -1,14 +1,20 @@
 package guru.springframework.springaiintro.services;
 
 import guru.springframework.springaiintro.model.Answer;
+import guru.springframework.springaiintro.model.GetCapitalRequest;
 import guru.springframework.springaiintro.model.Question;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 @Service
 public class OpenAIServiceImpl implements OpenAIService {
 
     private final ChatClient chatClient;
+
+    @Value("classpath:templates/get-capital.st")
+    private Resource getCapitalPrompt;
 
     public OpenAIServiceImpl(ChatClient chatClient) {
         this.chatClient = chatClient;
@@ -30,6 +36,20 @@ public class OpenAIServiceImpl implements OpenAIService {
         String answer = chatClient
                 .prompt()
                 .user(question.question())
+                .call()
+                .content();
+
+        return new Answer(answer);
+    }
+
+    @Override
+    public Answer getCapital(GetCapitalRequest getCapitalRequest) {
+        String answer = chatClient
+                .prompt()
+                .user(u -> u
+                        .text(getCapitalPrompt)
+                        .param("stateOrCountry", getCapitalRequest.stateOrCountry())
+                )
                 .call()
                 .content();
 
