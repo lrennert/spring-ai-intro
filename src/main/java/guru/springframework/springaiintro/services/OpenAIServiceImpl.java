@@ -3,6 +3,7 @@ package guru.springframework.springaiintro.services;
 import guru.springframework.springaiintro.model.Answer;
 import guru.springframework.springaiintro.model.GetCapitalRequest;
 import guru.springframework.springaiintro.model.GetCapitalResponse;
+import guru.springframework.springaiintro.model.GetCapitalWithInfoResponse;
 import guru.springframework.springaiintro.model.Question;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.messages.UserMessage;
@@ -96,16 +97,18 @@ public class OpenAIServiceImpl implements OpenAIService {
     }
 
     @Override
-    public Answer getCapitalWithInfo(GetCapitalRequest getCapitalRequest) {
-        String answer = chatClient
+    public GetCapitalWithInfoResponse getCapitalWithInfo(GetCapitalRequest getCapitalRequest) {
+        BeanOutputConverter<GetCapitalWithInfoResponse> converter =
+                new BeanOutputConverter<>(GetCapitalWithInfoResponse.class);
+
+        return chatClient
                 .prompt()
                 .user(u -> u
-                        .text(getCapitalWithInfoPrompt)
+                        .text(getCapitalPrompt)
                         .param("stateOrCountry", getCapitalRequest.stateOrCountry())
+                        .param("format", converter.getFormat())
                 )
                 .call()
-                .content();
-
-        return new Answer(answer);
+                .entity(converter);
     }
 }
