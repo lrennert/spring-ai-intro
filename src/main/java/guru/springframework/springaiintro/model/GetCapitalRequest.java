@@ -1,4 +1,7 @@
 package guru.springframework.springaiintro.model;
 
-public record GetCapitalRequest(String stateOrCountry) {
+public record GetCapitalRequest(
+        String stateOrCountry,
+        Boolean debugEnabled
+) {
 }
